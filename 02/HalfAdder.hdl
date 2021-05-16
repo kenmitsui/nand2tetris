@@ -14,6 +14,7 @@ CHIP HalfAdder {
 
     PARTS:
     // Put you code here:
+    // sumがXor(a,b)、carryがAnd(a,b)と一致しているので、それをそのまま実装
     Xor(a=a, b=b, out=sum);
     And(a=a, b=b, out=carry);
 }

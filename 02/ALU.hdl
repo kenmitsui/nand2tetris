@@ -43,21 +43,32 @@ CHIP ALU {
 
     PARTS:
    // Put you code here:
+   // zxによる操作
    Mux16(a=x, b[0..15]=false, sel=zx, out=outzx);
+   // nxによる操作
    Not16(in=outzx, out=xn);
    Mux16(a=outzx, b=xn, sel=nx, out=outnx);
+   // zyによる操作
    Mux16(a=y, b[0..15]=false, sel=zy, out=outzy);
+   // nyによる操作
    Not16(in=outzy, out=yn);
    Mux16(a=outzy, b=yn, sel=ny, out=outny);
+   // fによる操作
    Add16(a=outnx, b=outny, out=outor);
    And16(a=outnx, b=outny, out=outand);
    Mux16(a=outand, b=outor, sel=f, out=outf);
+   // noによる操作
    Not16(in=outf, out=outn);
+   // 以下の出力の全16ビットを調べたいが、Or8Wayしかないので2つに分ける
    Mux16(a=outf, b=outn, sel=no, out[0..7]=outlow8, out[8..15]=outhigh8, out[15]=out15);
+   // 同じ演算だが、outを得るために再度実施
+   Mux16(a=outf, b=outn, sel=no, out=out);
+   // zrとngの算出
    Or8Way(in=outlow8, out=outlow);
    Or8Way(in=outhigh8, out=outhigh);
    Or(a=outlow, b=outhigh, out=outzr);
+   // zrの算出。全16ビットのうち1つでも1があれば0、なければ1
    Not(in=outzr, out=zr);
+   // ngの算出。先頭のビットが0か1かを見て負判定する
    Mux(a=false, b=true, sel=out15, out=ng);
-   And16(a[0..7]=outlow8, a[8..15]=outhigh8, b[0..15]=true, out=out);
 }
